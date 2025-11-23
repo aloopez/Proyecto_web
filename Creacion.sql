@@ -70,6 +70,9 @@ ALTER TABLE Usuarios
 ADD COLUMN verificado BOOLEAN DEFAULT FALSE,
 ADD COLUMN tokenVerificacion VARCHAR(100);
 
+ALTER TABLE Usuarios 
+ADD COLUMN tokenExpiracion DATETIME;
+
 -- =============================================
 -- DATOS DE PRUEBA (SEEDERS)
 -- =============================================
