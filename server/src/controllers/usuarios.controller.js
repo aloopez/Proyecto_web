@@ -32,11 +32,11 @@ export const register = async (req, res) => {
 
     // 3. Generar token de verificación
     const verificationToken = crypto.randomBytes(20).toString('hex');
-
+    const tokenExpirationDate = new Date(Date.now() +  15 * 60 * 1000); // 15 minutos desde ahora
     // 4. Insertar usuario
     // En tu código original tenías "cliente" fijo, lo que ignoraba si alguien quería registrarse como propietario.
     const [result] = await pool.query(
-      "INSERT INTO Usuarios (nombre, correo, contrasenia, rol, departamento, municipio, tokenVerificacion, verificado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT INTO Usuarios (nombre, correo, contrasenia, rol, departamento, municipio, tokenVerificacion, verificado, tokenExpiracion ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
       [
         nombre, 
         correo, 
@@ -44,8 +44,9 @@ export const register = async (req, res) => {
         "cliente", 
         departamento, 
         municipio, 
-        verificationToken, 
-        false
+        verificationToken,
+        false,
+        tokenExpirationDate
       ]
     );
 
@@ -138,20 +139,26 @@ export const verifyEmail = async (req, res) => {
     const [users] = await pool.query("SELECT * FROM Usuarios WHERE tokenVerificacion = ?", [token]);
 
     if (users.length === 0) {
-      return res.status(400).json({ message: ["Token inválido o expirado"] });
+      return res.status(400).json({ message: ["Token inválido"] });
     }
 
     const user = users[0];
 
-    await pool.query("UPDATE Usuarios SET verificado = true, tokenVerificacion = NULL WHERE id = ?", [user.id]);
+    const ahora = new Date();
+    const expiracion = new Date(user.tokenExpiracion);
 
-    res.json({ message: "Correo verificado exitosamente. Ya puedes iniciar sesión." });
+    if (ahora > expiracion) {
+      return res.status(400).json({ message: ["El token ha expirado. Solicita uno nuevo."] });
+    }
+
+    await pool.query("UPDATE Usuarios SET verificado = 1, tokenVerificacion = NULL, tokenExpiracion = NULL WHERE id = ?", [user.id]);
+
+    res.json({ message: "Correo verificado exitosamente." });
 
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
-
 // aun en desarrollo
 
 /*
