@@ -15,7 +15,7 @@ function HomePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:3000/api/cars")
+      .get("http://localhost:3001/api/carros")
       .then((res) => {
         const payload = res.data?.cars ?? res.data;
         setCars(Array.isArray(payload) ? payload : payload ? [payload] : []);
