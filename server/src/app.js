@@ -1,24 +1,21 @@
-// src/app.js (ESM)
+// server/src/app.js
 import express from "express";
 import cors from "cors";
+import cookieParser from "cookie-parser"; // Importar cookie-parser
+import carrosRoutes from "./routes/carros.routes.js";
+import usuariosRoutes from "./routes/usuarios.routes.js"; // Importar rutas de auth
 
 const app = express();
 
-// Configuración de CORS
-const corsOptions = {
+// Middlewares
+app.use(cors({
   origin: "http://localhost:5173",
   optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+}));
+app.use(express.json());
+app.use(cookieParser());
 
-// Endpoint de ejemplo
-app.get("/api/cars", (req, res) => {
-  const cars = [
-    { id: 1, make: "Toyota", model: "Corolla", year: 2020, pricePerDay: 40, imageURL: "https://i.blogs.es/e5d8bc/toyota-corolla-2020_/1366_2000.jpg" },
-    { id: 2, make: "Ford", model: "Mustang", year: 2021, pricePerDay: 60, imageURL: "https://media.ed.edmunds-media.com/ford/mustang/2021/ns/2021_ford_mustang_f34_ns_506211_1600.jpg" },
-    { id: 3, make: "Chevrolet", model: "Camaro", year: 2019, pricePerDay: 50, imageURL: "https://di-uploads-pod1.dealerinspire.com/mikeandersonchevychicagoredesign/uploads/2019/04/2019-Camaro-1LT.png" },
-  ];
-  res.json({ cars });
-}); // este es solo un ejemplo momentaneo
-
+// Rutas
+app.use("/api", carrosRoutes);
+app.use("/api", usuariosRoutes ); 
 export default app;
