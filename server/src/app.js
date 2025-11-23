@@ -1,17 +1,21 @@
-// src/app.js (ESM)
+// server/src/app.js
 import express from "express";
 import cors from "cors";
-import carsRouter from "./routes/carsRoutes.js";
+import cookieParser from "cookie-parser"; // Importar cookie-parser
+import carrosRoutes from "./routes/carros.routes.js";
+import usuariosRoutes from "./routes/usuarios.routes.js"; // Importar rutas de auth
 
 const app = express();
 
-// Configuración de CORS
-const corsOptions = {
+// Middlewares
+app.use(cors({
   origin: "http://localhost:5173",
   optionsSuccessStatus: 200,
-};
-app.use(cors(corsOptions));
+}));
+app.use(express.json());
+app.use(cookieParser());
 
-app.use("/api", carsRouter);
-
+// Rutas
+app.use("/api", carrosRoutes);
+app.use("/api", usuariosRoutes ); 
 export default app;
