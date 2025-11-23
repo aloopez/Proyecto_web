@@ -143,7 +143,6 @@ export const verifyEmail = async (req, res) => {
 
     const user = users[0];
 
-    // CORRECCIÓN 3: Asegurarse de actualizar usando el ID correcto del usuario encontrado
     await pool.query("UPDATE Usuarios SET verificado = true, tokenVerificacion = NULL WHERE id = ?", [user.id]);
 
     res.json({ message: "Correo verificado exitosamente. Ya puedes iniciar sesión." });
