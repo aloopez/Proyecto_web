@@ -33,8 +33,8 @@ function HomePage() {
       // Filtro de modelo/marca
       const term = searchTerm.toLowerCase();
       const matchesSearch =
-        car.make.toLowerCase().includes(term) ||
-        car.model.toLowerCase().includes(term);
+        car.marca.toLowerCase().includes(term) ||
+        car.modelo.toLowerCase().includes(term);
 
       //Filtro de año
       const matchesYear = yearFilter
