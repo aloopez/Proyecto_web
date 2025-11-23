@@ -72,6 +72,8 @@ export const createCar = async (req, res) => {
   }
 };
 
+// aun en desarrollo
+
 /* export const getCarsByLocation = async (req, res) => {
   const { departamento } = req.params;
   // Consulta duenios de carro por departamento

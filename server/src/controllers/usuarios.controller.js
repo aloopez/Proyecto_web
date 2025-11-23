@@ -20,7 +20,7 @@ const createAccessToken = (payload) => {
 };
 
 export const register = async (req, res) => {
-  const { nombre, correo, contrasenia, rol, departamento, municipio } = req.body;
+  const { nombre, correo, contrasenia, departamento, municipio } = req.body;
 
   try {
     // 1. Verificar si el usuario ya existe
@@ -34,7 +34,6 @@ export const register = async (req, res) => {
     const verificationToken = crypto.randomBytes(20).toString('hex');
 
     // 4. Insertar usuario
-    // CORRECCIÓN 1: Usar la variable 'rol' o por defecto 'cliente'. 
     // En tu código original tenías "cliente" fijo, lo que ignoraba si alguien quería registrarse como propietario.
     const [result] = await pool.query(
       "INSERT INTO Usuarios (nombre, correo, contrasenia, rol, departamento, municipio, tokenVerificacion, verificado) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
@@ -42,7 +41,7 @@ export const register = async (req, res) => {
         nombre, 
         correo, 
         passwordHash, 
-        rol || "cliente", // <--- Cambio aquí: permite 'propietario' si el frontend lo envía
+        "cliente", 
         departamento, 
         municipio, 
         verificationToken, 
@@ -86,7 +85,6 @@ export const login = async (req, res) => {
 
     const user = users[0];
 
-    // CORRECCIÓN 2: Validar si ya verificó su correo
     // Si no ponemos esto, el usuario podría loguearse sin haber verificado su email.
     if (!user.verificado) {
        return res.status(401).json({ message: ["Por favor verifica tu correo antes de iniciar sesión"] });
@@ -116,7 +114,6 @@ export const login = async (req, res) => {
 };
 
 export const logout = (req, res) => {
-  // Nota: Como estamos usando JWT en el cliente (localStorage probablemente), 
   // el logout real sucede en el frontend borrando el token. 
   // Esta cookie solo sería útil si decidimos usar httpOnly cookies en el futuro.
   res.cookie("token", "", { expires: new Date(0) });
@@ -155,6 +152,8 @@ export const verifyEmail = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+// aun en desarrollo
 
 /*
 // Endpoint extra para validar perfil (útil para cuando recargas la página en React)
